@@ -3,379 +3,149 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forex Learning Lab - Interactive Course & Simulator</title>
+  <title>Forex Learning Lab</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --card-border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-hover: #0284c7;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 12px; line-height: 1.5; font-size: 14px; }
-    
-    header { max-width: 1200px; margin: 0 auto 16px; padding: 16px; background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; }
-    .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    h1 { color: var(--accent); font-size: 1.5rem; }
-    .sub { color: var(--text-muted); font-size: 0.85rem; }
-    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
-    .badge { background: var(--bg); border: 1px solid var(--card-border); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
-    .badge span { color: var(--accent); font-weight: bold; }
-
-    nav { max-width: 1200px; margin: 0 auto 16px; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
-    .nav-btn { background: var(--card); border: 1px solid var(--card-border); color: var(--text-muted); padding: 8px 14px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: 600; font-size: 0.85rem; }
+    :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8; --green: #22c55e; --red: #ef4444; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 12px; font-size: 14px; }
+    header { background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: 12px; margin-bottom: 12px; }
+    h1 { color: var(--accent); font-size: 1.4rem; }
+    nav { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
+    .nav-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
     .nav-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
-    .main { max-width: 1200px; margin: 0 auto; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
-
-    .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-    .card h2 { font-size: 1.1rem; color: var(--accent); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-
-    .btn { background: var(--accent); color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
-    .btn:hover { opacity: 0.9; }
-    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--card-border); }
-    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-
-    .box { background: var(--bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; margin: 10px 0; }
-    .eli13 { background: #172554; border-left: 4px solid var(--accent); padding: 10px; border-radius: 0 8px 8px 0; margin-top: 8px; font-size: 0.85rem; }
-
-    /* Interactive visuals */
-    .rate { font-size: 1.8rem; font-weight: bold; color: var(--accent); text-align: center; margin: 6px 0; }
-    .input-row { margin-bottom: 10px; }
-    .input-row label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2px; }
-    .input-row input, .input-row select { width: 100%; padding: 8px; background: var(--bg); border: 1px solid var(--card-border); border-radius: 6px; color: var(--text); }
-
-    /* Candle Vis */
-    .candle-wrap { height: 100px; display: flex; align-items: center; justify-content: center; position: relative; }
-    .candle-body { width: 24px; background: var(--success); position: relative; transition: all 0.2s; }
-    .candle-body.bearish { background: var(--danger); }
-    .candle-wick { position: absolute; width: 2px; background: #fff; left: 50%; transform: translateX(-50%); z-index: 0; }
-
-    /* Level List */
-    .level-item { padding: 10px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
-    .level-item:last-child { border-bottom: none; }
-    .tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
-    .tag-green { background: #15803d; color: #fff; }
-    .tag-gray { background: #334155; color: var(--text-muted); }
-
-    /* Journal Table */
-    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left; }
-    th, td { padding: 8px; border-bottom: 1px solid var(--card-border); }
-    th { color: var(--text-muted); }
+    .tab { display: none; }
+    .tab.active { display: block; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    .card h2 { color: var(--accent); font-size: 1.1rem; margin-bottom: 8px; }
+    .btn { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .btn-out { background: transparent; color: var(--text); border: 1px solid var(--border); margin-right: 4px; }
+    .box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin: 8px 0; }
+    .rate { font-size: 1.6rem; font-weight: bold; color: var(--accent); text-align: center; }
+    .eli { background: #172554; border-left: 3px solid var(--accent); padding: 8px; border-radius: 0 6px 6px 0; margin-top: 8px; font-size: 0.8rem; }
+    .row { margin-bottom: 8px; }
+    .row label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 2px; }
+    .row input, .row select { width: 100%; padding: 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="header-top">
-      <div>
-        <h1>FOREX LEARNING LAB</h1>
-        <p class="sub">Learn forex by seeing it, trying it, and practicing it.</p>
-      </div>
-      <div class="stats">
-        <div class="badge">Progress: <span id="st-prog">14%</span></div>
-        <div class="badge">Streak: <span>1 Day 🔥</span></div>
-        <div class="badge">Virtual Balance: <span id="st-bal">$10,000</span></div>
-      </div>
-    </div>
+    <h1>FOREX LEARNING LAB</h1>
+    <p style="color:var(--muted); font-size:0.8rem;">Interactive Forex Training Suite</p>
   </header>
 
   <nav>
-    <button class="nav-btn active" onclick="showTab('roadmap')">🗺️ Course Roadmap</button>
-    <button class="nav-btn" onclick="showTab('lessons')">🔬 Interactive Tools</button>
-    <button class="nav-btn" onclick="showTab('simulator')">📊 Trade Simulator</button>
-    <button class="nav-btn" onclick="showTab('journal')">📖 Journal & Plan</button>
-    <button class="nav-btn" onclick="showTab('glossary')">📚 Glossary & ELI13</button>
+    <button class="nav-btn active" onclick="tab('road')">🗺️ Roadmap</button>
+    <button class="nav-btn" onclick="tab('tools')">🔬 Interactive Tools</button>
+    <button class="nav-btn" onclick="tab('sim')">📊 Trade Simulator</button>
+    <button class="nav-btn" onclick="tab('gloss')">📚 Glossary</button>
   </nav>
 
-  <div class="main">
+  <!-- TAB 1: ROADMAP -->
+  <div id="road" class="tab active">
+    <div class="card">
+      <h2>Course Roadmap</h2>
+      <div class="box"><strong>Level 1: Forex Basics</strong> (Pairs, Base/Quote, Bid/Ask, Pips) — <span style="color:var(--green)">Active</span></div>
+      <div class="box"><strong>Level 2: Reading Charts</strong> (Candlesticks, Trends, Support/Resistance)</div>
+      <div class="box"><strong>Level 3: Risk & Position Sizing</strong> (Lot Sizes, Stop Loss, Leverage)</div>
+      <div class="box"><strong>Level 4: Technical Analysis</strong> (Moving Averages, RSI, Breakouts)</div>
+      <div class="box"><strong>Level 5: Trading Psychology</strong> (Plan, Risk Control, Discipline)</div>
+    </div>
+  </div>
 
-    <!-- TAB 1: ROADMAP -->
-    <div id="tab-roadmap" class="tab-content active">
-      <div class="card">
-        <h2>Course Map (7 Levels & 71 Topics)</h2>
-        <p style="color: var(--text-muted); margin-bottom: 12px;">Complete interactive modules to unlock advanced market levels.</p>
-
-        <div class="level-item">
-          <div><strong>Level 1: Forex Basics</strong> (Pairs, Base/Quote, Bid/Ask, Spread, Pips)</div>
-          <span class="tag tag-green">In Progress</span>
-        </div>
-        <div class="level-item">
-          <div><strong>Level 2: Reading Charts</strong> (Candlesticks, Timeframes, Trends, Support/Resistance)</div>
-          <span class="tag tag-gray">Unlocked</span>
-        </div>
-        <div class="level-item">
-          <div><strong>Level 3: Money & Risk</strong> (Lot Sizes, Position Sizing, Stop Loss, Leverage, Margin)</div>
-          <span class="tag tag-gray">Unlocked</span>
-        </div>
-        <div class="level-item">
-          <div><strong>Level 4: Why Prices Move</strong> (Interest Rates, Central Banks, Inflation, GDP, News)</div>
-          <span class="tag tag-gray">🔒 Locked</span>
-        </div>
-        <div class="level-item">
-          <div><strong>Level 5: Technical Analysis</strong> (Price Action, Moving Averages, RSI, ATR, MACD)</div>
-          <span class="tag tag-gray">🔒 Locked</span>
-        </div>
-        <div class="level-item">
-          <div><strong>Level 6: Trading Methodologies</strong> (Trend Following, Pullbacks, Breakouts, Ranges)</div>
-          <span class="tag tag-gray">🔒 Locked</span>
-        </div>
-        <div class="level-item">
-          <div><strong>Level 7: Trader Development</strong> (Psychology, FOMO, Revenge Trading, Trading Plan)</div>
-          <span class="tag tag-gray">🔒 Locked</span>
-        </div>
+  <!-- TAB 2: INTERACTIVE TOOLS -->
+  <div id="tools" class="tab">
+    <div class="card">
+      <h2>1. Pip Visualizer</h2>
+      <div class="box">
+        <div style="text-align:center; color:var(--muted);">USD / CAD</div>
+        <div class="rate" id="prate">1.3700</div>
       </div>
+      <button class="btn btn-out" onclick="pip(-1)">-1 Pip</button>
+      <button class="btn" onclick="pip(1)">+1 Pip</button>
+      <div class="eli"><strong>ELI13:</strong> A <strong>pip</strong> is the tiny 4th decimal digit ($0.0001$).</div>
     </div>
 
-    <!-- TAB 2: INTERACTIVE TOOLS -->
-    <div id="tab-lessons" class="tab-content">
-      <div class="grid-2">
-
-        <!-- Tool 1: Pairs & Pips -->
-        <div class="card">
-          <h2>Currency Pair & Pip Visualizer</h2>
-          <div class="box">
-            <div style="text-align: center; color: var(--text-muted);">USD / CAD Exchange Rate</div>
-            <div class="rate" id="p-rate">1.3700</div>
-            <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted);" id="p-exp">1 USD = 1.3700 CAD</div>
-          </div>
-          <div class="btn-group">
-            <button class="btn btn-outline" onclick="modPip(-10)">-10 Pips</button>
-            <button class="btn btn-outline" onclick="modPip(-1)">-1 Pip</button>
-            <button class="btn" onclick="modPip(1)">+1 Pip</button>
-            <button class="btn" onclick="modPip(10)">+10 Pips</button>
-          </div>
-          <div class="eli13">
-            <strong>ELI13:</strong> A <strong>pip</strong> is a tiny measurement unit (the 4th decimal place: 0.0001). Think of it like a single millimeter mark on a ruler!
-          </div>
-        </div>
-
-        <!-- Tool 2: Candlestick Builder -->
-        <div class="card">
-          <h2>Interactive Candlestick Builder</h2>
-          <div class="box">
-            <div class="candle-wrap">
-              <div id="c-box" class="candle-body" style="height: 50px;">
-                <div class="candle-wick" style="height: 80px; top: -15px;"></div>
-              </div>
-            </div>
-            <div id="c-status" style="text-align:center; font-weight:bold; color:var(--success); margin-top:6px;">BULLISH CANDLE (Buyers in control)</div>
-          </div>
-          <div class="input-row">
-            <label>Open Price: <span id="lbl-o">1.3700</span></label>
-            <input type="range" id="in-o" min="1.3600" max="1.3800" step="0.0005" value="1.3700" oninput="drawCandle()">
-          </div>
-          <div class="input-row">
-            <label>Close Price: <span id="lbl-c">1.3730</span></label>
-            <input type="range" id="in-c" min="1.3600" max="1.3800" step="0.0005" value="1.3730" oninput="drawCandle()">
-          </div>
-          <div class="eli13">
-            <strong>ELI13:</strong> A candle tells a 1-hour story. If price closes <strong>higher</strong> than open, it turns green (buyers won). If lower, it turns red (sellers won).
-          </div>
-        </div>
-
-        <!-- Tool 3: Risk Calculator -->
-        <div class="card" style="grid-column: 1 / -1;">
-          <h2>Position Size & Risk Calculator</h2>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-            <div>
-              <div class="input-row">
-                <label>Account Balance ($)</label>
-                <input type="number" id="calc-bal" value="10000" oninput="runCalc()">
-              </div>
-              <div class="input-row">
-                <label>Risk Per Trade (%)</label>
-                <input type="number" id="calc-risk" value="1" min="0.5" max="5" step="0.5" oninput="runCalc()">
-              </div>
-              <div class="input-row">
-                <label>Stop Loss Distance (Pips)</label>
-                <input type="number" id="calc-stop" value="20" oninput="runCalc()">
-              </div>
-            </div>
-            <div class="box" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
-              <div>Max Planned Dollar Loss: <strong id="res-loss" style="color:var(--danger);">$100.00</strong></div>
-              <div style="margin-top: 10px;">Safe Calculated Position Size:</div>
-              <div class="rate" id="res-lots">0.50 Lots</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">(50,000 Currency Units)</div>
-            </div>
-          </div>
-        </div>
-
+    <div class="card">
+      <h2>2. Position Size Calculator</h2>
+      <div class="row">
+        <label>Account Balance ($)</label>
+        <input type="number" id="bal" value="10000" oninput="calc()">
+      </div>
+      <div class="row">
+        <label>Risk (%)</label>
+        <input type="number" id="risk" value="1" oninput="calc()">
+      </div>
+      <div class="row">
+        <label>Stop Loss (Pips)</label>
+        <input type="number" id="sl" value="20" oninput="calc()">
+      </div>
+      <div class="box" style="text-align:center;">
+        <div>Recommended Lot Size:</div>
+        <div class="rate" id="res">0.50 Lots</div>
       </div>
     </div>
+  </div>
 
-    <!-- TAB 3: SIMULATOR -->
-    <div id="tab-simulator" class="tab-content">
-      <div class="card">
-        <h2>Trade Decision Simulator</h2>
-        <p style="color: var(--text-muted); margin-bottom: 12px;">Scenario: USD/CAD 1-Hour Chart — Price pulled back to key support line.</p>
-
-        <div class="box" style="text-align: center; padding: 20px; background: #020617;">
-          <div style="font-size: 1.1rem; color: var(--accent);">📊 USD/CAD Setup: Bullish Bounce at Support (1.3700)</div>
-          <div style="margin-top: 6px; color: var(--text-muted);">Current Price: 1.3705 | Support: 1.3700 | Resistance: 1.3800</div>
-        </div>
-
-        <div class="grid-2">
-          <div class="input-row">
-            <label>Trade Direction</label>
-            <select id="sim-dir">
-              <option value="BUY">BUY (Long)</option>
-              <option value="SELL">SELL (Short)</option>
-            </select>
-          </div>
-          <div class="input-row">
-            <label>Stop Loss (Pips)</label>
-            <input type="number" id="sim-sl" value="20">
-          </div>
-          <div class="input-row">
-            <label>Take Profit (Pips)</label>
-            <input type="number" id="sim-tp" value="40">
-          </div>
-          <div class="input-row">
-            <label>Risk Per Trade</label>
-            <select id="sim-risk">
-              <option value="1">1% ($100)</option>
-              <option value="2">2% ($200)</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="execSim()">Execute Simulated Trade</button>
-
-        <div id="sim-result" class="box" style="display: none; margin-top: 12px;"></div>
+  <!-- TAB 3: SIMULATOR -->
+  <div id="sim" class="tab">
+    <div class="card">
+      <h2>Trade Scenario Simulator</h2>
+      <div class="box">
+        <div><strong>Pair:</strong> USD/CAD at Key Support Level (1.3700)</div>
       </div>
-    </div>
-
-    <!-- TAB 4: JOURNAL & PLAN -->
-    <div id="tab-journal" class="tab-content">
-      <div class="card">
-        <h2>Trading Journal Log</h2>
-        <div style="overflow-x: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Pair</th>
-                <th>Type</th>
-                <th>Risk %</th>
-                <th>Result</th>
-                <th>R-Multiple</th>
-                <th>Rule Adherence</th>
-              </tr>
-            </thead>
-            <tbody id="journal-body">
-              <tr>
-                <td>USD/CAD</td>
-                <td>BUY</td>
-                <td>1.0%</td>
-                <td style="color:var(--success);">WIN (+$200)</td>
-                <td>+2.0 R</td>
-                <td style="color:var(--success);">Followed Plan ✓</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="row">
+        <label>Trade Action</label>
+        <select id="sdir">
+          <option value="BUY">BUY (Long)</option>
+          <option value="SELL">SELL (Short)</option>
+        </select>
       </div>
+      <button class="btn" style="width:100%; margin-top:8px;" onclick="runSim()">Execute Trade</button>
+      <div id="sres" class="box" style="display:none; margin-top:10px;"></div>
     </div>
+  </div>
 
-    <!-- TAB 5: GLOSSARY -->
-    <div id="tab-glossary" class="tab-content">
-      <div class="card">
-        <h2>Always-Accessible Glossary</h2>
-        <div class="input-row">
-          <input type="text" id="g-search" placeholder="Search terms (e.g. Pip, Spread, Leverage)..." oninput="searchGloss()">
-        </div>
-
-        <div class="box">
-          <strong>Pip:</strong> Smallest standard price step (4th decimal place, $0.0001$).<br>
-          <span style="color:var(--accent);">ELI13:</span> Like 1 millimeter mark on a ruler.
-        </div>
-        <div class="box">
-          <strong>Spread:</strong> Difference between Bid (buy) and Ask (sell) price.<br>
-          <span style="color:var(--accent);">ELI13:</span> The small fee a currency exchange booth keeps when swapping cash.
-        </div>
-        <div class="box">
-          <strong>Leverage:</strong> Borrowed capital to control larger trade sizes.<br>
-          <span style="color:var(--accent);">ELI13:</span> Controlling a bigger shopping cart with a small deposit—profits grow, but losses do too!
-        </div>
-      </div>
+  <!-- TAB 4: GLOSSARY -->
+  <div id="gloss" class="tab">
+    <div class="card">
+      <h2>Glossary</h2>
+      <div class="box"><strong>Pip:</strong> Smallest price change unit in forex exchange rates.</div>
+      <div class="box"><strong>Spread:</strong> Difference between Bid and Ask prices.</div>
+      <div class="box"><strong>Leverage:</strong> Borrowed funds allowing control over larger trade positions.</div>
     </div>
-
   </div>
 
   <script>
-    function showTab(id) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + id).classList.add('active');
+    function tab(id) {
+      document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
       event.target.classList.add('active');
     }
 
-    let rate = 1.3700;
-    function modPip(p) {
-      rate = Math.round((rate + p * 0.0001) * 10000) / 10000;
-      document.getElementById('p-rate').innerText = rate.toFixed(4);
-      document.getElementById('p-exp').innerText = `1 USD = ${rate.toFixed(4)} CAD`;
+    let r = 1.3700;
+    function pip(n) {
+      r = Math.round((r + n * 0.0001) * 10000) / 10000;
+      document.getElementById('prate').innerText = r.toFixed(4);
     }
 
-    function drawCandle() {
-      const o = parseFloat(document.getElementById('in-o').value);
-      const c = parseFloat(document.getElementById('in-c').value);
-      document.getElementById('lbl-o').innerText = o.toFixed(4);
-      document.getElementById('lbl-c').innerText = c.toFixed(4);
+    function calc() {
+      const b = parseFloat(document.getElementById('bal').value) || 0;
+      const k = parseFloat(document.getElementById('risk').value) || 0;
+      const s = parseFloat(document.getElementById('sl').value) || 1;
+      const lots = (b * (k / 100)) / (s * 10);
+      document.getElementById('res').innerText = `${Math.max(0.01, lots).toFixed(2)} Lots`;
+    }
 
-      const b = document.getElementById('c-box');
-      const st = document.getElementById('c-status');
-
-      if (c >= o) {
-        b.classList.remove('bearish');
-        st.innerText = "BULLISH CANDLE (Buyers in control)";
-        st.style.color = "var(--success)";
+    function runSim() {
+      const dir = document.getElementById('sdir').value;
+      const out = document.getElementById('sres');
+      out.style.display = 'block';
+      if (dir === 'BUY') {
+        out.innerHTML = "<strong style='color:var(--green);'>PROFIT: +$200</strong><br>Good setup! Buying at support follows market discipline.";
       } else {
-        b.classList.add('bearish');
-        st.innerText = "BEARISH CANDLE (Sellers in control)";
-        st.style.color = "var(--danger)";
-      }
-    }
-
-    function runCalc() {
-      const bal = parseFloat(document.getElementById('calc-bal').value) || 0;
-      const rPct = parseFloat(document.getElementById('calc-risk').value) || 0;
-      const stp = parseFloat(document.getElementById('calc-stop').value) || 1;
-
-      const dLoss = bal * (rPct / 100);
-      const lots = dLoss / (stp * 10);
-
-      document.getElementById('res-loss').innerText = `$${dLoss.toFixed(2)}`;
-      document.getElementById('res-lots').innerText = `${Math.max(0.01, lots).toFixed(2)} Lots`;
-    }
-
-    function execSim() {
-      const dir = document.getElementById('sim-dir').value;
-      const sl = parseInt(document.getElementById('sim-sl').value);
-      const tp = parseInt(document.getElementById('sim-tp').value);
-      const res = document.getElementById('sim-result');
-
-      res.style.display = 'block';
-
-      if (dir === 'BUY' && tp >= sl * 1.5) {
-        res.innerHTML = `<strong style="color:var(--success);">TRADE OUTCOME: WIN (+$200)</strong><br>
-        <strong>Process Evaluation: GOOD PROCESS ✓</strong><br>
-        You respected support and used a healthy Risk/Reward ratio (>1:1.5).`;
-      } else {
-        res.innerHTML = `<strong style="color:var(--danger);">TRADE OUTCOME: LOSS (-$100)</strong><br>
-        <strong>Process Evaluation: REVIEW RULES</strong><br>
-        Always ensure your Take Profit target is larger than your Stop Loss distance!`;
+        out.innerHTML = "<strong style='color:var(--red);'>LOSS: -$100</strong><br>Selling into major support carries high risk.";
       }
     }
   </script>

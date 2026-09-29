@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forex Learning Lab</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.5; }
+    header { max-width: 1100px; margin: 0 auto 24px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    h1 { font-size: 1.8rem; color: var(--accent); margin-bottom: 4px; }
+    p.subtitle { color: var(--text-muted); font-size: 0.95rem; }
+    .stats-bar { display: flex; justify-content: center; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+    .stat-badge { background: var(--card-bg); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; }
+    .stat-badge span { color: var(--accent); font-weight: bold; }
+    
+    .container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 768px) { .container { grid-template-columns: 1fr 1fr; } .full-width { grid-column: span 2; } }
+    
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .card h2 { font-size: 1.2rem; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    
+    /* Interactive Sliders & Visuals */
+    .visual-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 12px 0; text-align: center; }
+    .rate-display { font-size: 2rem; font-weight: bold; color: var(--accent); margin: 8px 0; }
+    .btn { background: var(--accent); color: #000; font-weight: 600; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; transition: background 0.2s; font-size: 0.9rem; }
+    .btn:hover { background: var(--accent-hover); color: #fff; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-group { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+    
+    /* ELI13 Box */
+    .eli13-box { background: #172554; border-left: 4px solid var(--accent); padding: 12px; border-radius: 0 8px 8px 0; font-size: 0.9rem; margin-top: 12px; display: none; }
+    .eli13-box.active { display: block; }
+
+    /* Calculator Inputs */
+    .input-group { margin-bottom: 12px; text-align: left; }
+    .input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+    .input-group input, .input-group select { width: 100%; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.9rem; }
+
+    /* Candle Builder */
+    .candle-visual { height: 120px; display: flex; align-items: center; justify-content: center; margin: 16px 0; }
+    .candle-body { width: 30px; background: var(--success); position: relative; transition: all 0.3s; }
+    .candle-body.bearish { background: var(--danger); }
+    .candle-wick { position: absolute; width: 2px; background: #fff; left: 50%; transform: translateX(-50%); z-index: 0; }
+
+    /* Course Roadmap List */
+    .roadmap-list { list-style: none; }
+    .roadmap-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .roadmap-item:last-child { border-bottom: none; }
+    .status-check { color: var(--success); font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>FOREX LEARNING LAB</h1>
+    <p class="subtitle">Learn forex by seeing it, trying it, and practicing it.</p>
+    <div class="stats-bar">
+      <div class="stat-badge">Progress: <span id="prog-val">0%</span></div>
+      <div class="stat-badge">Streak: <span id="streak-val">1 Day 🔥</span></div>
+      <div class="stat-badge">Virtual Balance: <span id="bal-val">$10,000</span></div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- LESSON 1: PAIRS & PIPS -->
+    <div class="card">
+      <h2>1. Currency Pair & Pip Visualizer</h2>
+      <p style="font-size: 0.9rem; color: var(--text-muted);">See how currency rates move in real time and calculate price changes in pips.</p>
+      
+      <div class="visual-box">
+        <div>USD / CAD Exchange Rate</div>
+        <div class="rate-display" id="pair-rate">1.3700</div>
+        <p id="pair-explain" style="font-size: 0.85rem; color: var(--text-muted);">1 USD = 1.3700 CAD</p>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="changePip(-10)">-10 Pips</button>
+        <button class="btn btn-outline" onclick="changePip(-1)">-1 Pip</button>
+        <button class="btn" onclick="changePip(1)">+1 Pip</button>
+        <button class="btn" onclick="changePip(10)">+10 Pips</button>
+      </div>
+
+      <button class="btn btn-outline" style="width: 100%; margin-top: 12px;" onclick="toggleELI13('eli-pip')">💡 Explain Like I'm 13</button>
+      
+      <div id="eli-pip" class="eli13-box">
+        <strong>13-Year-Old Explanation:</strong> Think of a <strong>pip</strong> like a tiny millimeter mark on a ruler. It measures the absolute smallest standard change in price, usually at the 4th decimal place ($0.0001$).
+      </div>
+    </div>
+
+    <!-- LESSON 2: CANDLESTICK INSPECTOR -->
+    <div class="card">
+      <h2>2. Interactive Candlestick Builder</h2>
+      <p style="font-size: 0.9rem; color: var(--text-muted);">Adjust the prices to build your own candle and see if it's Bullish (green) or Bearish (red).</p>
+
+      <div class="visual-box">
+        <div class="candle-visual">
+          <div id="candle-box" class="candle-body" style="height: 60px;">
+            <div id="candle-wick-line" class="candle-wick" style="height: 100px; top: -20px;"></div>
+          </div>
+        </div>
+        <div id="candle-status" style="font-weight: bold; color: var(--success);">BULLISH CANDLE (Buyers in control)</div>
+      </div>
+
+      <div class="input-group">
+        <label>Open Price: <span id="lbl-open">1.3700</span></label>
+        <input type="range" id="inp-open" min="1.3600" max="1.3800" step="0.0005" value="1.3700" oninput="updateCandle()">
+      </div>
+      <div class="input-group">
+        <label>Close Price: <span id="lbl-close">1.3740</span></label>
+        <input type="range" id="inp-close" min="1.3600" max="1.3800" step="0.0005" value="1.3740" oninput="updateCandle()">
+      </div>
+
+      <button class="btn btn-outline" style="width: 100%;" onclick="toggleELI13('eli-candle')">💡 Explain Like I'm 13</button>
+      
+      <div id="eli-candle" class="eli13-box">
+        <strong>13-Year-Old Explanation:</strong> A candlestick is like a 1-hour storybook of price. If price closes <strong>higher</strong> than it opened, the candle is <strong>Green (Bullish)</strong>. If it closes <strong>lower</strong>, it's <strong>Red (Bearish)</strong>.
+      </div>
+    </div>
+
+    <!-- LESSON 3: RISK & POSITION CALCULATOR -->
+    <div class="card full-width">
+      <h2>3. Position Size & Risk Calculator</h2>
+      <p style="font-size: 0.9rem; color: var(--text-muted);">Never guess your trade size! Calculate maximum dollar risk before placing a trade.</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 12px;">
+        <div>
+          <div class="input-group">
+            <label>Account Balance ($)</label>
+            <input type="number" id="calc-bal" value="10000" oninput="calcRisk()">
+          </div>
+          <div class="input-group">
+            <label>Risk Per Trade (%)</label>
+            <input type="number" id="calc-risk" value="1" min="0.5" max="5" step="0.5" oninput="calcRisk()">
+          </div>
+          <div class="input-group">
+            <label>Stop Loss Distance (Pips)</label>
+            <input type="number" id="calc-stop" value="20" oninput="calcRisk()">
+          </div>
+        </div>
+
+        <div class="visual-box" style="display: flex; flex-direction: column; justify-content: center;">
+          <div>Max Planned Loss: <strong id="res-dollar" style="color: var(--danger);">$100.00</strong></div>
+          <div style="margin-top: 8px;">Recommended Position Size:</div>
+          <div id="res-lot" class="rate-display">0.50 Lots</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">(50,000 Currency Units)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURSE ROADMAP PROGRESS -->
+    <div class="card full-width">
+      <h2>Course Roadmap Progress</h2>
+      <ul class="roadmap-list">
+        <li class="roadmap-item">
+          <span>Level 1: What is Forex & Currency Pairs</span>
+          <span class="status-check">✓ Completed</span>
+        </li>
+        <li class="roadmap-item">
+          <span>Level 2: Reading Candlesticks & Timeframes</span>
+          <span class="status-check">✓ Completed</span>
+        </li>
+        <li class="roadmap-item">
+          <span>Level 3: Money Management & Risk Calculator</span>
+          <span class="status-check">✓ Completed</span>
+        </li>
+        <li class="roadmap-item" style="color: var(--text-muted);">
+          <span>Level 4: Market Structure & Support/Resistance</span>
+          <span>🔒 Locked</span>
+        </li>
+        <li class="roadmap-item" style="color: var(--text-muted);">
+          <span>Level 5: Trade Decision Simulator</span>
+          <span>🔒 Locked</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <script>
+    let rate = 1.3700;
+    
+    function changePip(pips) {
+      rate = Math.round((rate + pips * 0.0001) * 10000) / 10000;
+      document.getElementById('pair-rate').innerText = rate.toFixed(4);
+      document.getElementById('pair-explain').innerText = `1 USD = ${rate.toFixed(4)} CAD`;
+    }
+
+    function toggleELI13(id) {
+      const box = document.getElementById(id);
+      box.classList.toggle('active');
+    }
+
+    function updateCandle() {
+      const open = parseFloat(document.getElementById('inp-open').value);
+      const close = parseFloat(document.getElementById('inp-close').value);
+      
+      document.getElementById('lbl-open').innerText = open.toFixed(4);
+      document.getElementById('lbl-close').innerText = close.toFixed(4);
+
+      const box = document.getElementById('candle-box');
+      const status = document.getElementById('candle-status');
+
+      if (close >= open) {
+        box.classList.remove('bearish');
+        status.innerText = "BULLISH CANDLE (Buyers in control)";
+        status.style.color = "var(--success)";
+      } else {
+        box.classList.add('bearish');
+        status.innerText = "BEARISH CANDLE (Sellers in control)";
+        status.style.color = "var(--danger)";
+      }
+    }
+
+    function calcRisk() {
+      const bal = parseFloat(document.getElementById('calc-bal').value) || 0;
+      const riskPct = parseFloat(document.getElementById('calc-risk').value) || 0;
+      const stopPips = parseFloat(document.getElementById('calc-stop').value) || 1;
+
+      const dollarRisk = bal * (riskPct / 100);
+      const lotSize = dollarRisk / (stopPips * 10);
+
+      document.getElementById('res-dollar').innerText = `$${dollarRisk.toFixed(2)}`;
+      document.getElementById('res-lot').innerText = `${Math.max(0.01, lotSize).toFixed(2)} Lots`;
+    }
+  </script>
+</body>
+</html>
